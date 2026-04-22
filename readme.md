@@ -38,17 +38,12 @@
 
 直接用现代浏览器打开根目录下的 `index.html`。如果只想查看单个星球，可直接打开 `earth.html`、`mars.html`、`saturn.html` 等页面。
 
-### 方式二：本地服务器预览
+### 方式二：Lively Wallpaper
 
-- Python 3：
-  ```bash
-  python -m http.server 8000
-  ```
-- Node.js：
-  ```bash
-  npx serve .
-  ```
-然后在浏览器中打开 `http://localhost:8000`。
+打开 Lively Wallpaper。
+选择 Add Wallpaper。
+导入项目根目录下的 index.html，即可将首页作为统一入口。
+如果需要固定某个星球，也可以直接导入对应的星球 HTML 页面。
 
 ### 方式三：GitHub Pages
 
