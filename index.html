@@ -23,13 +23,68 @@
             border: none;
         }
 
+        #audio-toggle {
+            position: fixed;
+            top: 18px;
+            right: 18px;
+            z-index: 9999;
+            width: 56px;
+            height: 56px;
+            padding: 0;
+            color: #ffffff;
+            background: rgba(10, 16, 30, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.16);
+            border-radius: 50%;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            backdrop-filter: blur(10px);
+            transition: transform 0.18s ease, background 0.18s ease, border-color 0.18s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        #audio-toggle::before {
+            content: '♪';
+            display: block;
+            transition: transform 0.3s ease;
+        }
+
+        #audio-toggle:hover {
+            transform: scale(1.05);
+            background: rgba(22, 34, 60, 0.95);
+        }
+
+        #audio-toggle.active {
+            background: rgba(37, 123, 255, 0.16);
+            border-color: rgba(56, 175, 255, 0.65);
+            animation: rotate 2s linear infinite;
+        }
+
+        #audio-toggle.active::before {
+            transform: rotate(360deg);
+        }
+
+        @keyframes rotate {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+
     </style>
 </head>
 
 <body>
-<audio id="background-music" src="assets/Inon Zur - Into the Starfield (Main Theme).mp3" autoplay loop preload="auto">
+<audio id="background-music" src="assets/Inon Zur - Into the Starfield (Main Theme).mp3" loop preload="auto">
   Your browser does not support the audio element.
 </audio>
+<button id="audio-toggle" aria-pressed="false" title="播放/暂停背景音乐"></button>
 <iframe id="content-frame" src="system.html" allow="autoplay; fullscreen" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" style="width:100vw;height:100vh;border:0;margin:0;padding:0;"></iframe>
 
 <script src="./scripts/core/audioManager.js"></script>
@@ -37,6 +92,34 @@
     if (typeof AudioManager !== 'undefined')
     {
         AudioManager.init();
+    }
+
+    const audioToggle = document.getElementById('audio-toggle');
+    const audioElement = document.getElementById('background-music');
+
+    function updateAudioButton() {
+        if (!audioToggle || !audioElement) {
+            return;
+        }
+        if (!audioElement.paused) {
+            audioToggle.classList.add('active');
+            audioToggle.setAttribute('aria-pressed', 'true');
+        } else {
+            audioToggle.classList.remove('active');
+            audioToggle.setAttribute('aria-pressed', 'false');
+        }
+    }
+
+    if (audioToggle && audioElement && typeof AudioManager !== 'undefined') {
+        audioToggle.addEventListener('click', () => {
+            AudioManager.toggle();
+            updateAudioButton();
+        });
+
+        audioElement.addEventListener('play', updateAudioButton);
+        audioElement.addEventListener('pause', updateAudioButton);
+
+        updateAudioButton();
     }
 </script>
 <script src="./scripts/core/iframeShell.js"></script>

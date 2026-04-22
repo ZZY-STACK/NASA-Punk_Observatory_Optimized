@@ -56,6 +56,29 @@
         }
     }
 
+    function toggleAudio()
+    {
+        const audio = document.getElementById('background-music');
+        if (!audio)
+        {
+            return;
+        }
+
+        if (window.parent !== window)
+        {
+            return;
+        }
+
+        if (audio.paused)
+        {
+            tryStartAudio(audio);
+        }
+        else
+        {
+            audio.pause();
+        }
+    }
+
     function activateAudio()
     {
         if (_audioActivated)
@@ -119,6 +142,8 @@
     
     global.AudioManager = {
         init: initAudio,
+        activate: activateAudio,
+        toggle: toggleAudio,
         savePosition: saveAudioPosition,
         loadPosition: loadAudioPosition
     };
