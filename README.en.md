@@ -46,21 +46,12 @@ visualization, especially using Chinese aerospace data to drive each planet's pa
 Open `index.html` in a modern browser to enter the home navigation page.
 You can also open a planet page directly, such as `earth.html`, `mars.html`, or `saturn.html`.
 
-### Option 2: Local Server
+### Option 2: Lively Wallpaper
 
-Run a local static server for the best experience:
-
-```bash
-python -m http.server 8000
-```
-
-Or with Node.js:
-
-```bash
-npx serve .
-```
-
-Then open `http://localhost:8000` in your browser.
+1. Open Lively Wallpaper.
+2. Choose `Add Wallpaper`.
+3. Import `index.html` from the project root to use the home page as the main entry.
+4. If needed, import any individual planet page instead.
 
 ### Option 3: GitHub Pages Deployment
 
