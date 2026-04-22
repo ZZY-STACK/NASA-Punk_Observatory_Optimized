@@ -2,8 +2,8 @@
 {
     global.SYSTEM_SELECT_CONFIG = {
         dock       : {
-            title    : '系统 : SOL',
-            subText  : '扇区: <b>SOL_系统</b> // 恒星: <b>G2V_矮星</b> // 行星: <b>8</b>',
+            title    : '系别 : SOL',
+            subText  : '扇区: <b>太阳系</b> // 恒星: <b>G2V_矮星</b> // 行星: <b>8</b>',
             rows     : ['&gt; 系统概览: <span class="alert">SOL</span>'],
             footerRow: '<div class="terminal-output" id="terminal-content"></div>'
         },
