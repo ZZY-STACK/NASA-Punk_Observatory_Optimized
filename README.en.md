@@ -1,4 +1,4 @@
-# NASA-Punk: Observatory
+# NASA-Punk: Observatory_Optimized
 
 > ZZY-STACK version built on flowersauce/NASA-Punk_Observatory
 
