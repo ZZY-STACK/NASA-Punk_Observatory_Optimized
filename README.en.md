@@ -107,7 +107,7 @@ This version maps Chinese aerospace datasets to the planetary presentation:
 
 ## Acknowledgements and License
 
-This project is derived from `flowersauce/NASA-Punk_Observatory` and extended by `ZZY-STACK`.
+This project is derived from `flowersauce/NASA-Punk_Observatory` and extended by `ZZY-STACK`.We would like to express our sincere gratitude to the original author for their contributions.
 
 - Original author: `flowersauce`
 - Current author: `ZZY-STACK`
@@ -116,6 +116,6 @@ This repository is released under the MIT License. See [LICENSE](LICENSE) for de
 
 If you reuse or fork this project, please keep the original attribution and note the derived work.
 
+
 ---
 
-If you want, I can also help you add a `docs/DEPLOYMENT.md` file with GitHub Pages and custom domain setup steps.

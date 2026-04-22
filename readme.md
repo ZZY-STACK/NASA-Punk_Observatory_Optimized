@@ -87,13 +87,12 @@ NASA-Punk_Observatory/
 
 ## 致谢与许可
 
-本项目基于 `flowersauce/NASA-Punk_Observatory` 开源项目改造，并在此基础上添加大量可视化与交互优化。  
+本项目基于 `flowersauce/NASA-Punk_Observatory` 开源项目改造，并在此基础上添加大量可视化与交互优化，感谢原作者的贡献。  
 
 - 原项目作者：`flowersauce`  
 - 本项目作者：`ZZY-STACK`  
 
 许可证：本项目使用 MIT 许可证，详见 [LICENSE](LICENSE)。如果你使用或修改本项目，请保留原作者和本项目作者声明。
 
----
 
-如果希望，我还可以继续帮你补一个 `README.en.md` 的中文翻译版本。
+---
