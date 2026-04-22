@@ -147,4 +147,9 @@
     {
         recalculateLayout();
     }
+
+    if (typeof AudioManager !== 'undefined')
+    {
+        AudioManager.init();
+    }
 })();

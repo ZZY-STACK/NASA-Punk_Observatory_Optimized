@@ -6,4 +6,9 @@
         return;
     }
     renderPlanetUI(planetName);
+
+    if (typeof AudioManager !== 'undefined')
+    {
+        AudioManager.init();
+    }
 })();
