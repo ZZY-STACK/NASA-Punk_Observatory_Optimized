@@ -1,4 +1,4 @@
-# NASA-Punk: Observatory
+# NASA-Punk: Observatory_Optimized
 
 > 基于 flowersauce/NASA-Punk_Observatory 的改进版本
 
