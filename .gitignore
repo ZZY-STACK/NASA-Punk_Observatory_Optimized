@@ -20,3 +20,8 @@ Thumbs.db
 *.aps                 # Visual Studio 资源文件
 *.bsc                 # Visual Studio 浏览信息文件
 *.sbr                 # Visual Studio 源代码浏览器信息
+# 自动忽略依赖包和缓存
+node_modules/
+dist/
+.env
+.DS_Store
