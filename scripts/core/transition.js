@@ -71,14 +71,31 @@
         init    : function ()
         {
             const curtain = ensureCurtain();
-            window.addEventListener('load', () =>
+
+            function startIntro()
             {
                 requestAnimationFrame(() =>
                 {
                     curtain.classList.remove('start-covered');
                     curtain.classList.add('curtain-intro');
                 });
-            });
+            }
+
+            if (document.readyState === 'complete')
+            {
+                startIntro();
+            }
+            else
+            {
+                window.addEventListener('load', startIntro);
+                setTimeout(() =>
+                {
+                    if (curtain.classList.contains('start-covered'))
+                    {
+                        startIntro();
+                    }
+                }, 500);
+            }
         },
         navigate: function (url)
         {

@@ -102,32 +102,28 @@
 </div>
 
 <canvas id="topo-canvas"></canvas>
-<audio id="background-music" src="assets/Inon Zur - Into the Starfield (Main Theme).mp3" autoplay loop>
-  Your browser does not support the audio element.
-</audio>
 <div id="canvas-container"></div>
 
 <div id="ui-layer">
     <div id="planet-ui-root"></div>
 </div>
 
-<!-- 数据面板 -->
-<div class="dashboard">
-    <div class="data-row">
-        <div class="data-col">
-            <div class="col-label">当前年份</div>
-            <div class="num-box" id="neptune-time">2015</div>
-        </div>
-        <div class="data-col">
-            <div class="col-label">全产业链规模(万亿)</div>
-            <div class="num-box" id="neptune-scale">0.60</div>
-        </div>
-        <div class="data-col">
-            <div class="col-label">海王星粒子数</div>
-            <div class="num-box" id="neptune-particle">0</div>
+    <div class="dashboard">
+        <div class="data-row">
+            <div class="data-col">
+                <div class="col-label">当前年份</div>
+                <div class="num-box" id="neptune-time">2015</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">全产业链规模(万亿)</div>
+                <div class="num-box" id="neptune-scale">0.60</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">海王星粒子数</div>
+                <div class="num-box" id="neptune-particle">0</div>
+            </div>
         </div>
     </div>
-</div>
 
 <script src="./scripts/vendor/three.min.js"></script>
 <script src="./scripts/vendor/simplex-noise.min.js"></script>
@@ -136,6 +132,7 @@
 <script src="./scripts/core/telemetry.js"></script>
 <script src="./scripts/core/interaction.js"></script>
 <script src="./scripts/core/transition.js"></script>
+<script src="./scripts/core/iframeNavigation.js"></script>
 <script src="./scripts/core/audioManager.js"></script>
 <script src="./scripts/planets/config.js"></script>
 <script src="./scripts/components/planetUi.js"></script>

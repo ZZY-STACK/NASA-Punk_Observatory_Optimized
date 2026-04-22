@@ -82,6 +82,11 @@
             applyZoom(value);
         });
 
+        function isPlanetPageUrl(url)
+        {
+            return /(?:mercury|venus|earth|mars|jupiter|saturn|uranus|neptune)\.html(?:[?#]|$)/i.test(url);
+        }
+
         nodes.forEach((node) =>
         {
             node.addEventListener('mouseenter', () =>
@@ -98,6 +103,16 @@
                 const link = node.dataset.link;
                 if (!link)
                 {
+                    return;
+                }
+
+                if (window.parent !== window)
+                {
+                    window.parent.postMessage({ type: 'navigate', url: link }, '*');
+                    if (isPlanetPageUrl(link))
+                    {
+                        window.parent.postMessage({ type: 'activate-audio' }, '*');
+                    }
                     return;
                 }
 

@@ -82,6 +82,12 @@
             monitor.style.cursor = 'pointer';
             monitor.addEventListener('click', () =>
             {
+                if (window.parent !== window)
+                {
+                    window.parent.postMessage({ type: 'navigate', url: 'index.html' }, '*');
+                    return;
+                }
+
                 if (typeof TransitionManager !== 'undefined')
                 {
                     TransitionManager.navigate('index.html');

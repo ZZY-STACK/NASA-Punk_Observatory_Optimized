@@ -7,32 +7,39 @@
     <title>NASA-Punk 天文台 : 系别选择</title>
     <link rel="stylesheet" href="./styles/main.css">
     <link rel="stylesheet" href="./styles/transition.css">
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: #04070f;
+        }
+
+        #content-frame {
+            width: 100vw;
+            height: 100vh;
+            border: none;
+        }
+
+    </style>
 </head>
 
 <body>
-<div class="transition-curtain start-covered" id="global-curtain">
-    <div class="curtain-col c1"></div>
-    <div class="curtain-col c2"></div>
-    <div class="curtain-col c3"></div>
-    <div class="curtain-col c4"></div>
-</div>
-
-<canvas id="topo-canvas"></canvas>
-<audio id="background-music" src="assets/Inon Zur - Into the Starfield (Main Theme).mp3" autoplay loop>
+<audio id="background-music" src="assets/Inon Zur - Into the Starfield (Main Theme).mp3" autoplay loop preload="auto">
   Your browser does not support the audio element.
 </audio>
-<div id="system-select-root"></div>
+<iframe id="content-frame" src="system.html" allow="autoplay; fullscreen" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" style="width:100vw;height:100vh;border:0;margin:0;padding:0;"></iframe>
 
-<script src="./scripts/vendor/simplex-noise.min.js"></script>
-<script src="./scripts/components/topoRenderer.js"></script>
-<script src="./scripts/components/observatoryUi.js"></script>
-<script src="./scripts/core/interaction.js"></script>
-<script src="./scripts/core/transition.js"></script>
 <script src="./scripts/core/audioManager.js"></script>
-<script src="./scripts/components/systemSelect.config.js"></script>
-<script src="./scripts/components/systemSelectUi.js"></script>
-<script src="./scripts/pages/index.page.js"></script>
-
+<script>
+    if (typeof AudioManager !== 'undefined')
+    {
+        AudioManager.init();
+    }
+</script>
+<script src="./scripts/core/iframeShell.js"></script>
 </body>
 
 </html>
