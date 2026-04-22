@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA-Punk : SOL-VII (天王星)</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/transition.css">
+    <style>
+        .uranus-intro-overlay {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 1200;
+            width: min(360px, 28vw);
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            background: rgba(4, 12, 24, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            color: #f6fbff;
+            font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+
+        .uranus-intro-text {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .uranus-intro-overlay.fade-out {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+        }
+        /* 天王星专用：冷冽的青蓝色光晕 */
+        .p-uranus {
+            box-shadow: 0 0 10px rgba(100, 220, 235, 0.8);
+            background-color: #64dceb;
+        }
+        /* 数据面板 */
+        .dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 150px;
+            z-index: 100;
+            width: 380px;
+            padding: 20px;
+            background: #0d1430;
+            border: 2px solid #64dceb;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .data-col {
+            width: 32%;
+        }
+        .col-label {
+            font-size: 14px;
+            color: #a0e0ff;
+            margin-bottom: 10px;
+        }
+        .num-box {
+            font-size: 22px;
+            font-weight: bold;
+            color: #64dceb;
+            min-height: 30px;
+        }
+    </style>
+</head>
+
+<body data-planet="uranus">
+<div class="transition-curtain start-covered" id="global-curtain">
+    <div class="curtain-col c1"></div>
+    <div class="curtain-col c2"></div>
+    <div class="curtain-col c3"></div>
+    <div class="curtain-col c4"></div>
+</div>
+
+<div id="uranus-intro-overlay" class="uranus-intro-overlay">
+    <p class="uranus-intro-text">以生成天王星粒子做模拟，对应我国在轨航天器总数数据，天王星拥有独特公转轨道，与卫星星座差异化布局场景高度契合<br>数据来源：中国航天科技活动蓝皮书2025</p>
+</div>
+
+<div class="brand-stripe">
+    <div class="stripe-seg s-1"></div>
+    <div class="stripe-seg s-2"></div>
+    <div class="stripe-seg s-3"></div>
+    <div class="stripe-seg s-4"></div>
+</div>
+
+<canvas id="topo-canvas"></canvas>
+<div id="canvas-container"></div>
+
+<div id="ui-layer">
+    <div id="planet-ui-root"></div>
+</div>
+
+<!-- 数据面板 初始值：2015 / 140 / 0 -->
+<div class="dashboard">
+    <div class="data-row">
+        <div class="data-col">
+            <div class="col-label">当前年份</div>
+            <div class="num-box" id="time">2015</div>
+        </div>
+        <div class="data-col">
+            <div class="col-label">在轨航天器</div>
+            <div class="num-box" id="satellite">140</div>
+        </div>
+        <div class="data-col">
+            <div class="col-label">天王星粒子数</div>
+            <div class="num-box" id="particle">0</div>
+        </div>
+    </div>
+</div>
+
+<script src="./scripts/vendor/three.min.js"></script>
+<script src="./scripts/vendor/simplex-noise.min.js"></script>
+<script src="./scripts/components/topoRenderer.js"></script>
+<script src="./scripts/components/observatoryUi.js"></script>
+<script src="./scripts/core/telemetry.js"></script>
+<script src="./scripts/core/interaction.js"></script>
+<script src="./scripts/core/transition.js"></script>
+<script src="./scripts/planets/config.js"></script>
+<script src="./scripts/components/planetUi.js"></script>
+<script src="./scripts/pages/planet.page.js"></script>
+<script src="./scripts/planets/uranus.js"></script>
+
+<!-- 极简数据脚本，无重复变量，彻底解决报错 -->
+<script>
+    const SPEED = 20;
+    const STEP = 5;
+    let currentCount = 140;
+    let timer;
+
+    function update() {
+        if (currentCount >= MAX_SATELLITE) {
+            clearInterval(timer);
+            return;
+        }
+        currentCount = Math.min(currentCount + STEP, MAX_SATELLITE);
+        window.currentCount = currentCount;
+        
+        document.getElementById("time").innerText = getCurrentDate(currentCount);
+        document.getElementById("satellite").innerText = currentCount;
+    }
+
+    window.addEventListener('load', () => {
+        setTimeout(() => {
+            timer = setInterval(update, SPEED);
+        }, 3000);
+    });
+</script>
+</body>
+</html>

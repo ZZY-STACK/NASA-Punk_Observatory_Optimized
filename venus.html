@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA-PUNK : VENUS (金星)</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/transition.css">
+    <style>
+        .venus-intro-overlay {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 1200;
+            width: min(360px, 28vw);
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            background: rgba(4, 12, 24, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            color: #f6fbff;
+            font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+
+        .venus-intro-text {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        .venus-intro-overlay.fade-out {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+        }
+
+        /* 缩放条位置 严格跟太阳一致 */
+        .vertical-zoom-control {
+            position: fixed !important;
+            bottom: 150px !important;
+            right: 40px !important;
+            z-index: 9998 !important;
+        }
+
+        /* 唯一数据面板 沿用你调好的 right:150px */
+        .dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 150px;
+            z-index: 100;
+            width: 380px;
+            padding: 20px;
+            background: #0d1430;
+            border: 2px solid #ffaa00;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .data-col {
+            width: 32%;
+        }
+        .col-label {
+            font-size: 14px;
+            color: #ffd37f;
+            margin-bottom: 10px;
+        }
+        .num-box {
+            font-size: 22px;
+            font-weight: bold;
+            color: #ffaa00;
+            min-height: 30px;
+        }
+
+        /* 金星专属配色 */
+        .p-venus {
+            box-shadow: 0 0 14px rgba(255, 170, 0, 0.9);
+            background-color: #ffaa00;
+        }
+    </style>
+</head>
+
+<body data-planet="venus">
+    <div class="transition-curtain start-covered" id="global-curtain">
+        <div class="curtain-col c1"></div>
+        <div class="curtain-col c2"></div>
+        <div class="curtain-col c3"></div>
+        <div class="curtain-col c4"></div>
+    </div>
+
+    <!-- 金星介绍文本 -->
+    <div id="venus-intro-overlay" class="venus-intro-overlay">
+        <p class="venus-intro-text">以生成金星粒子做模拟，对应我国北斗导航产业规模数据，金星为夜空方位指引星，与全域定位服务场景高度契合<br>数据周期：2013-2025 | 数据来源：北斗系统发展报告、赛迪顾问2026产业报告</p>
+    </div>
+
+    <div class="brand-stripe">
+        <div class="stripe-seg s-1"></div>
+        <div class="stripe-seg s-2"></div>
+        <div class="stripe-seg s-3"></div>
+        <div class="stripe-seg s-4"></div>
+    </div>
+
+    <canvas id="topo-canvas"></canvas>
+    <div id="canvas-container"></div>
+
+    <div id="ui-layer">
+        <div id="planet-ui-root"></div>
+    </div>
+
+    <!-- 唯一数据面板 无任何多余表格 -->
+    <div class="dashboard">
+        <div class="data-row">
+            <div class="data-col">
+                <div class="col-label">当前年份</div>
+                <div class="num-box" id="year">2013</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">产业产值(百万元)</div>
+                <div class="num-box" id="output">10400</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">金星粒子数</div>
+                <div class="num-box" id="particle">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./scripts/vendor/three.min.js"></script>
+    <script src="./scripts/vendor/simplex-noise.min.js"></script>
+    <script src="./scripts/components/topoRenderer.js"></script>
+    <script src="./scripts/components/observatoryUi.js"></script>
+    <script src="./scripts/core/telemetry.js"></script>
+    <script src="./scripts/core/interaction.js"></script>
+    <script src="./scripts/core/transition.js"></script>
+    <script src="./scripts/planets/config.js"></script>
+    <script src="./scripts/components/planetUi.js"></script>
+    <script src="./scripts/pages/planet.page.js"></script>
+    <script src="./scripts/planets/venus.js"></script>
+
+    <!-- 数据逻辑：超慢增速 + 产值转百万元 + 62万粒子封顶 + 3秒延迟启动 -->
+    <script>
+        const segments = [
+            { value: 1040,  year: "2013" },
+            { value: 1330,  year: "2014" },
+            { value: 1900,  year: "2015" },
+            { value: 2118,  year: "2016" },
+            { value: 2550,  year: "2017" },
+            { value: 3016,  year: "2018" },
+            { value: 3450,  year: "2019" },
+            { value: 4033,  year: "2020" },
+            { value: 4690,  year: "2021" },
+            { value: 5007,  year: "2022" },
+            { value: 5400,  year: "2023" },
+            { value: 5758,  year: "2024" },
+            { value: 6200,  year: "2025" }
+        ];
+
+        const MAX_PARTICLE = 620000;
+        const SPEED = 60;     // 极慢速度
+        const STEP = 20;       // 极小步长
+        let currentValue = 1040;
+        let timer;
+
+        function update() {
+            if (currentValue >= 6200) {
+                clearInterval(timer);
+                document.getElementById("year").innerText = "2025";
+                document.getElementById("output").innerText = "62000";
+                document.getElementById("particle").innerText = "620,000";
+                return;
+            }
+
+            currentValue += STEP;
+            let currentYear = "2025";
+            for (let i = 0; i < segments.length - 1; i++) {
+                const s = segments[i];
+                const e = segments[i + 1];
+                if (currentValue >= s.value && currentValue < e.value) {
+                    currentYear = s.year;
+                    break;
+                }
+            }
+
+            const outputMillion = currentValue * 10;
+            const particleCount = Math.floor((currentValue / 6200) * MAX_PARTICLE);
+
+            document.getElementById("year").innerText = currentYear;
+            document.getElementById("output").innerText = outputMillion.toLocaleString();
+            document.getElementById("particle").innerText = particleCount.toLocaleString();
+        }
+
+        //  3秒延迟启动数据递增（和粒子同步）
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                timer = setInterval(update, SPEED);
+            }, 3000);
+        });
+    </script>
+    </script>
+</body>
+
+</html>

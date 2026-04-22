@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA-Punk : SOL-III (地球)</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/transition.css">
+    <style>
+        .earth-intro-overlay {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 1200;
+            width: min(360px, 28vw);
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            background: rgba(4, 12, 24, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            color: #f6fbff;
+            font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+
+        .earth-intro-text {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+
+        /* 地球专属数据面板 */
+        .dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 150px;
+            z-index: 100;
+            width: 400px;
+            padding: 20px;
+            background: #0d1430;
+            border: 2px solid #4D9EFF;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .data-col {
+            width: 32%;
+        }
+        .col-label {
+            font-size: 14px;
+            color: #A1D2FF;
+            margin-bottom: 10px;
+        }
+        .num-box {
+            font-size: 22px;
+            font-weight: bold;
+            color: #4D9EFF;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body data-planet="earth">
+<div class="transition-curtain start-covered" id="global-curtain">
+    <div class="curtain-col c1"></div>
+    <div class="curtain-col c2"></div>
+    <div class="curtain-col c3"></div>
+    <div class="curtain-col c4"></div>
+</div>
+
+<div class="brand-stripe">
+    <div class="stripe-seg s-1"></div>
+    <div class="stripe-seg s-2"></div>
+    <div class="stripe-seg s-3"></div>
+    <div class="stripe-seg s-4"></div>
+</div>
+
+<div id="earth-intro-overlay" class="earth-intro-overlay">
+    <p class="earth-intro-text">以生成地球粒子做模拟，对应我国航天员在轨驻留数据，地球是人类生存家园，与太空驻留场景高度契合<br>数据来源：中国载人航天工程办公室官网</p>
+</div>
+
+<canvas id="topo-canvas"></canvas>
+<div id="canvas-container"></div>
+
+<div id="ui-layer">
+    <div id="planet-ui-root"></div>
+</div>
+
+<!-- 地球数据面板 -->
+<div class="dashboard">
+    <div class="data-row">
+        <div class="data-col">
+            <div class="col-label">当前时间</div>
+            <div class="num-box" id="year">2002</div>
+        </div>
+        <div class="data-col">
+            <div class="col-label">累计在轨(小时)</div>
+            <div class="num-box" id="hours">0</div>
+        </div>
+        <div class="data-col">
+            <div class="col-label">地球粒子数</div>
+            <div class="num-box" id="particle">0</div>
+        </div>
+    </div>
+</div>
+
+<script src="./scripts/vendor/three.min.js"></script>
+<script src="./scripts/vendor/simplex-noise.min.js"></script>
+<script src="./scripts/components/topoRenderer.js"></script>
+<script src="./scripts/components/observatoryUi.js"></script>
+<script src="./scripts/core/telemetry.js"></script>
+<script src="./scripts/core/interaction.js"></script>
+<script src="./scripts/core/transition.js"></script>
+<script src="./scripts/planets/config.js"></script>
+<script src="./scripts/components/planetUi.js"></script>
+<script src="./scripts/pages/planet.page.js"></script>
+<script src="./scripts/planets/earth.js"></script>
+</body>
+</html>

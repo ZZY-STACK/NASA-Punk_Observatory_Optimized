@@ -1,0 +1,74 @@
+/* =========================================
+   NASA-Punk Transition System (Module)
+   Version: 1.0
+   ========================================= */
+
+.transition-curtain {
+    position: fixed;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    z-index: 9999;
+    pointer-events: none;
+    display: flex;
+    transform: skewX(-15deg) translateX(-100%);
+    will-change: transform, opacity; /* 启用硬件加速 */
+    background: var(--bg-navy);
+}
+
+.transition-curtain.start-covered {
+    transform: skewX(-15deg) translateX(0%);
+}
+
+.curtain-col {
+    flex: 1;
+    height: 100%;
+    transform: scaleX(1.1) translateZ(0); /* 硬件加速 */
+    backface-visibility: hidden;
+}
+.c1 {
+    background: var(--const-red);
+}
+
+.c2 {
+    background: var(--const-orange);
+}
+
+.c3 {
+    background: var(--const-yellow);
+}
+
+.c4 {
+    background: var(--const-blue);
+}
+
+.curtain-exit {
+    animation: wipe-in 0.8s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+    animation-fill-mode: forwards;
+}
+
+.curtain-intro {
+    animation: wipe-out 0.8s cubic-bezier(0.7, 0, 0.3, 1) forwards;
+    animation-fill-mode: forwards;
+}
+
+@keyframes wipe-in {
+    from {
+        transform: skewX(-15deg) translate3d(-100%, 0, 0);
+    }
+
+    to {
+        transform: skewX(-15deg) translate3d(0%, 0, 0);
+    }
+}
+
+@keyframes wipe-out {
+    from {
+        transform: skewX(-15deg) translate3d(0%, 0, 0);
+    }
+
+    to {
+        transform: skewX(-15deg) translate3d(100%, 0, 0);
+    }
+}

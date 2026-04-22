@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA-Punk : SOL-IV (火星)</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/transition.css">
+    <style>
+        .mars-intro-overlay {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 1200;
+            width: min(360px, 28vw);
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            background: rgba(4, 12, 24, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            color: #f6fbff;
+            font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+        .mars-intro-text {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .mars-intro-overlay.fade-out {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+        }
+        /* 火星专用：锈红色的光晕 */
+        .p-mars {
+            box-shadow: 0 0 10px rgba(221, 79, 49, 0.9);
+            background-color: #dd4f31;
+        }
+        /* 数据面板样式 */
+        .dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 150px;
+            z-index: 100;
+            width: 520px;
+            padding: 20px;
+            background: #0d1430;
+            border: 2px solid #dd4f31;
+            border-radius: 12px;
+            text-align: center;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .data-col {
+            width: 24%;
+        }
+        .col-label {
+            font-size: 14px;
+            color: #ff8a65;
+            margin-bottom: 10px;
+        }
+        .num-box {
+            font-size: 22px;
+            font-weight: bold;
+            color: #dd4f31;
+            min-height: 30px;
+        }
+    </style>
+</head>
+<body data-planet="mars">
+    <div class="transition-curtain start-covered" id="global-curtain">
+        <div class="curtain-col c1"></div>
+        <div class="curtain-col c2"></div>
+        <div class="curtain-col c3"></div>
+        <div class="curtain-col c4"></div>
+    </div>
+
+    <div id="mars-intro-overlay" class="mars-intro-overlay">
+        <p class="mars-intro-text">以生成火星粒子做模拟，对应我国天问一号火星探测数据，火星是行星际核心探测目标，与地月系外跨越场景高度契合<br>数据来源：国家航天局天问一号任务五周年通报</p>
+    </div>
+
+    <div class="brand-stripe">
+        <div class="stripe-seg s-1"></div>
+        <div class="stripe-seg s-2"></div>
+        <div class="stripe-seg s-3"></div>
+        <div class="stripe-seg s-4"></div>
+    </div>
+
+    <canvas id="topo-canvas"></canvas>
+    <div id="canvas-container"></div>
+
+    <div id="ui-layer">
+        <div id="planet-ui-root"></div>
+    </div>
+
+    <!--  天问一号数据联动面板 -->
+    <div class="dashboard">
+        <div class="data-row">
+            <div class="data-col">
+                <div class="col-label">当前时间</div>
+                <div class="num-box" id="mars-time">2020.07.23</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">飞行里程(亿公里)</div>
+                <div class="num-box" id="mars-mileage">0.0055</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">数据量(TB)</div>
+                <div class="num-box" id="mars-data">0</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">火星粒子数</div>
+                <div class="num-box" id="mars-particle">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./scripts/vendor/three.min.js"></script>
+    <script src="./scripts/vendor/simplex-noise.min.js"></script>
+    <script src="./scripts/components/topoRenderer.js"></script>
+    <script src="./scripts/components/observatoryUi.js"></script>
+    <script src="./scripts/core/telemetry.js"></script>
+    <script src="./scripts/core/interaction.js"></script>
+    <script src="./scripts/core/transition.js"></script>
+    <script src="./scripts/planets/config.js"></script>
+    <script src="./scripts/components/planetUi.js"></script>
+    <script src="./scripts/pages/planet.page.js"></script>
+    <script src="./scripts/planets/mars.js"></script>
+</body>
+</html>

@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NASA-Punk : SOL-VI (土星)</title>
+    <link rel="stylesheet" href="./styles/main.css">
+    <link rel="stylesheet" href="./styles/transition.css">
+    <style>
+        .saturn-intro-overlay {
+            position: fixed;
+            top: 1.5rem;
+            left: 1.5rem;
+            z-index: 1200;
+            width: min(360px, 28vw);
+            padding: 1rem 1.1rem;
+            border-radius: 16px;
+            background: rgba(4, 12, 24, 0.82);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            box-shadow: 0 24px 60px rgba(0, 0, 0, 0.22);
+            color: #f6fbff;
+            font-family: "Helvetica Neue", Arial, "PingFang SC", "Microsoft YaHei", sans-serif;
+            font-size: 0.95rem;
+            line-height: 1.7;
+            letter-spacing: 0.02em;
+            text-align: left;
+            overflow-wrap: break-word;
+        }
+        .saturn-intro-text {
+            margin: 0;
+            white-space: pre-wrap;
+        }
+        .saturn-intro-overlay.fade-out {
+            opacity: 0;
+            transition: opacity 0.8s ease;
+            pointer-events: none;
+        }
+        /* 土星专用配色（对标木星） */
+         .p-saturn {
+            box-shadow: 0 0 10px rgba(227, 218, 197, 0.8);
+            background-color: #E3DAC5;
+        }
+        /*  数据面板：土星米黄色调 */
+        .dashboard {
+            position: fixed;
+            bottom: 20px;
+            right: 150px;
+            z-index: 100;
+            width: 420px;
+            padding: 20px;
+            background: #0d1430;
+            border: 2px solid #E3DAC5; /* 土星主色 */
+            border-radius: 12px;
+            text-align: center;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+        }
+        .data-col {
+            width: 32%;
+        }
+        .col-label {
+            font-size: 14px;
+            color: #E3DAC5; /* 土星主色 */
+            margin-bottom: 10px;
+        }
+        /* 数字盒子 + 滚轮动画 */
+        /* 修改数字盒子的初始状态 */
+        .num-box {
+            font-size: 22px;
+            font-weight: bold;
+            color: #E3DAC5; /* 土星主色 */
+            min-height: 30px;
+            position: relative;
+            overflow: hidden;
+            height: 30px; /* 添加固定高度确保动画空间 */
+        }
+
+        .num-box .date-current {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            opacity: 1;
+            transform: translateY(0);
+            animation: none; /* 初始时不应用动画 */
+        }
+
+        .num-box .date-next {
+            display: block;
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            opacity: 0;
+            transform: translateY(50px);
+            animation: none; /* 初始时不应用动画 */
+        }
+
+        /* 确保动画定义正确 */
+        @keyframes fadeOutUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        
+        /* 翻页动画定义 */
+        @keyframes pageFlip {
+            0% {
+                transform: rotateY(0deg) scale(1);
+                opacity: 1;
+            }
+            50% {
+                transform: rotateY(90deg) scale(0.95);
+                opacity: 0.5;
+            }
+            100% {
+                transform: rotateY(0deg) scale(1);
+                opacity: 1;
+            }
+        }
+        /* 滚轮向上动画定义 */
+        @keyframes wheelUp {
+            0% {
+                transform: translateY(10px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        /* 日期变换动画 */
+        @keyframes fadeOutUp {
+            0% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-50px);
+                opacity: 0;
+            }
+        }
+        @keyframes fadeInUp {
+            0% {
+                transform: translateY(50px);
+                opacity: 0;
+            }
+            100% {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+    </style>
+</head>
+<body data-planet="saturn">
+    <div class="transition-curtain start-covered" id="global-curtain">
+        <div class="curtain-col c1"></div>
+        <div class="curtain-col c2"></div>
+        <div class="curtain-col c3"></div>
+        <div class="curtain-col c4"></div>
+    </div>
+
+    <div id="saturn-intro-overlay" class="saturn-intro-overlay">
+        <p class="saturn-intro-text">以生成土星星环粒子做模拟，对应我国嫦娥探月月球采样数据，土星环形成完整闭环轨道，与探月绕落回任务场景高度契合<br>数据来源：国家航天局嫦娥五号、六号成果发布会</p>
+    </div>
+
+    <div class="brand-stripe">
+        <div class="stripe-seg s-1"></div>
+        <div class="stripe-seg s-2"></div>
+        <div class="stripe-seg s-3"></div>
+        <div class="stripe-seg s-4"></div>
+    </div>
+
+    <canvas id="topo-canvas"></canvas>
+    <div id="canvas-container"></div>
+
+    <div id="ui-layer">
+        <div id="planet-ui-root"></div>
+    </div>
+
+    <!--  嫦娥探月数据面板（和木星结构完全一致） -->
+    <div class="dashboard">
+        <div class="data-row">
+            <div class="data-col">
+                <div class="col-label">探测时间</div>
+                <div class="num-box" id="saturn-time">
+                    <span class="date-current">2020.12.17</span>
+                    <span class="date-next">2024.06.25</span>
+                </div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">累计采样(g)</div>
+                <div class="num-box" id="saturn-sample">1731.0</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">星环粒子数</div>
+                <div class="num-box" id="saturn-particle">0</div>
+            </div>
+        </div>
+    </div>
+
+    <script src="./scripts/vendor/three.min.js"></script>
+    <script src="./scripts/vendor/simplex-noise.min.js"></script>
+    <script src="./scripts/components/topoRenderer.js"></script>
+    <script src="./scripts/components/observatoryUi.js"></script>
+    <script src="./scripts/core/telemetry.js"></script>
+    <script src="./scripts/core/interaction.js"></script>
+    <script src="./scripts/core/transition.js"></script>
+    <script src="./scripts/planets/config.js"></script>
+    <script src="./scripts/components/planetUi.js"></script>
+    <script src="./scripts/pages/planet.page.js"></script>
+    <script src="./scripts/planets/saturn.js"></script>
+</body>
+</html>
