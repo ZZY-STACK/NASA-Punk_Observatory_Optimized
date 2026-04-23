@@ -68,29 +68,23 @@
         }
 
         @keyframes rotate {
-            from {
-                transform: rotate(0deg);
-            }
-            to {
-                transform: rotate(360deg);
-            }
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
         }
-
-
     </style>
 </head>
 
 <body>
-<audio id="background-music" src="assets/Inon Zur - Into the Starfield (Main Theme).mp3" loop preload="auto">
+<audio id="background-music" src="assets/the Guilty Pleasures - In Search Of_HQ.mp3" loop preload="auto">
   Your browser does not support the audio element.
 </audio>
 <button id="audio-toggle" aria-pressed="false" title="播放/暂停背景音乐"></button>
+
 <iframe id="content-frame" src="system.html" allow="autoplay; fullscreen" sandbox="allow-same-origin allow-scripts allow-forms allow-popups" style="width:100vw;height:100vh;border:0;margin:0;padding:0;"></iframe>
 
 <script src="./scripts/core/audioManager.js"></script>
 <script>
-    if (typeof AudioManager !== 'undefined')
-    {
+    if (typeof AudioManager !== 'undefined') {
         AudioManager.init();
     }
 
@@ -98,9 +92,7 @@
     const audioElement = document.getElementById('background-music');
 
     function updateAudioButton() {
-        if (!audioToggle || !audioElement) {
-            return;
-        }
+        if (!audioToggle || !audioElement) return;
         if (!audioElement.paused) {
             audioToggle.classList.add('active');
             audioToggle.setAttribute('aria-pressed', 'true');
@@ -111,18 +103,23 @@
     }
 
     if (audioToggle && audioElement && typeof AudioManager !== 'undefined') {
+        // 只在第一次点击时从头播放
+        let isFirstPlay = true;
+
         audioToggle.addEventListener('click', () => {
+            if (isFirstPlay) {
+                audioElement.currentTime = 0;
+                isFirstPlay = false;
+            }
             AudioManager.toggle();
             updateAudioButton();
         });
 
         audioElement.addEventListener('play', updateAudioButton);
         audioElement.addEventListener('pause', updateAudioButton);
-
         updateAudioButton();
     }
 </script>
 <script src="./scripts/core/iframeShell.js"></script>
 </body>
-
 </html>
