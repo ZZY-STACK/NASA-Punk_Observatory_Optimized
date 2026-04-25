@@ -1,7 +1,7 @@
 # NASA-Punk: Observatory_Optimized
 
 > 基于 flowersauce/NASA-Punk_Observatory 的改进版本
-[ENG README](README.md)
+[ENG README](README.en.md)
 ![Offline Ready](https://img.shields.io/badge/Offline-Ready-success?style=flat-square&logo=rss)
 ![WebGL](https://img.shields.io/badge/Render-WebGL-blueviolet?style=flat-square&logo=webgl)
 ![Three.js](https://img.shields.io/badge/Core-Three.js-black?style=flat-square&logo=three.js)
