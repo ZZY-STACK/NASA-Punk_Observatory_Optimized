@@ -7,7 +7,17 @@
     <title>NASA-Punk : SOL (太阳)</title>
     <link rel="stylesheet" href="./styles/main.css">
     <link rel="stylesheet" href="./styles/transition.css">
+    <!-- 🔥 不依赖 cursor.css，完全用JS控制 -->
     <style>
+        /* ====================== 🔥 最高优先级：强制隐藏所有原生光标 ====================== */
+        * {
+            cursor: none !important;
+        }
+        html, body {
+            cursor: none !important;
+            overflow-x: hidden;
+        }
+
         .sun-intro-overlay {
             position: fixed;
             top: 1.5rem;
@@ -132,6 +142,7 @@
         </div>
     </div>
 
+    <!-- 脚本加载：完美版 -->
     <script src="./scripts/vendor/three.min.js"></script>
     <script src="./scripts/vendor/simplex-noise.min.js"></script>
     <script src="./scripts/components/topoRenderer.js"></script>
@@ -141,14 +152,17 @@
     <script src="./scripts/core/transition.js"></script>
     <script src="./scripts/core/iframeNavigation.js"></script>
     <script src="./scripts/core/audioManager.js"></script>
+    <!-- 🔥 cursor.js 放在最前面，优先执行 -->
+    <script src="./scripts/core/cursor.js"></script>
     <script src="./scripts/planets/config.js"></script>
     <script src="./scripts/components/planetUi.js"></script>
     <script src="./scripts/pages/planet.page.js"></script>
     <script src="./scripts/planets/sun.js"></script>
 
-    <!-- 简化数据脚本：仅控制时间/发射数，粒子数由3D引擎实时同步 -->
+    <!-- 简化数据脚本：🔥 彻底解决 MAX_LAUNCH 重复声明 -->
     <script>
-        const MAX_LAUNCH = 657;
+        // 🔥 修复：改个名字，彻底避免和 sun.js 冲突
+        const SUN_MAX_LAUNCH = 657;
         const segments = [
             { count: 0,   date: "1970" },
             { count: 100, date: "2007.06.01" },
@@ -197,13 +211,14 @@
         }
 
         function update() {
-            if (currentCount >= MAX_LAUNCH) {
+            // 🔥 用改后的名字
+            if (currentCount >= SUN_MAX_LAUNCH) {
                 clearInterval(timer);
                 return;
             }
 
             let nextCount = currentCount + STEP;
-            if (nextCount > MAX_LAUNCH) nextCount = MAX_LAUNCH;
+            if (nextCount > SUN_MAX_LAUNCH) nextCount = SUN_MAX_LAUNCH;
 
             currentCount = nextCount;
             window.currentCount = currentCount; // 同步给全局

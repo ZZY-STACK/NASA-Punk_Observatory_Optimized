@@ -7,6 +7,7 @@
     <title>NASA-Punk : SOL-I (水星)</title>
     <link rel="stylesheet" href="./styles/main.css">
     <link rel="stylesheet" href="./styles/transition.css">
+    <!-- <link rel="stylesheet" href="./styles/cursor.css"> -->
     <style>
         .mercury-intro-overlay {
             position: fixed;
@@ -88,120 +89,125 @@
 </head>
 
 <body data-planet="mercury">
-<div class="transition-curtain start-covered" id="global-curtain">
-    <div class="curtain-col c1"></div>
-    <div class="curtain-col c2"></div>
-    <div class="curtain-col c3"></div>
-    <div class="curtain-col c4"></div>
-</div>
+    <div class="transition-curtain start-covered" id="global-curtain">
+        <div class="curtain-col c1"></div>
+        <div class="curtain-col c2"></div>
+        <div class="curtain-col c3"></div>
+        <div class="curtain-col c4"></div>
+    </div>
 
-<!-- 水星专属修正字幕（累计商业航天发射，和太阳彻底区分） -->
-<div id="mercury-intro-overlay" class="mercury-intro-overlay">
-    <p class="mercury-intro-text">以生成水星粒子做模拟，对应中国商业航天累计发射次数数据，水星公转速度最快，与商业航天高速发展的特质高度契合<br>数据来源：《中国航天科技活动蓝皮书》、国家航天局</p>
-</div>
+    <!-- 水星专属修正字幕（累计商业航天发射，和太阳彻底区分） -->
+    <div id="mercury-intro-overlay" class="mercury-intro-overlay">
+        <p class="mercury-intro-text">以生成水星粒子做模拟，对应中国商业航天累计发射次数数据，水星公转速度最快，与商业航天高速发展的特质高度契合<br>数据来源：《中国航天科技活动蓝皮书》、国家航天局</p>
+    </div>
 
-<div class="brand-stripe">
-    <div class="stripe-seg s-1"></div>
-    <div class="stripe-seg s-2"></div>
-    <div class="stripe-seg s-3"></div>
-    <div class="stripe-seg s-4"></div>
-</div>
+    <div class="brand-stripe">
+        <div class="stripe-seg s-1"></div>
+        <div class="stripe-seg s-2"></div>
+        <div class="stripe-seg s-3"></div>
+        <div class="stripe-seg s-4"></div>
+    </div>
 
-<canvas id="topo-canvas"></canvas>
-<div id="canvas-container"></div>
+    <canvas id="topo-canvas"></canvas>
+    <div id="canvas-container"></div>
 
-<div id="ui-layer">
-    <div id="planet-ui-root"></div>
-</div>
+    <div id="ui-layer">
+        <div id="planet-ui-root"></div>
+    </div>
 
-<!-- 统一数据面板 -->
-<div class="dashboard">
-    <div class="data-row">
-        <div class="data-col">
-            <div class="col-label">当前年份</div>
-            <div class="num-box" id="year">2015</div>
-        </div>
-        <div class="data-col">
-            <div class="col-label">累计发射</div>
-            <div class="num-box" id="launch">0</div>
-        </div>
-        <div class="data-col">
-            <div class="col-label">水星粒子数</div>
-            <div class="num-box" id="particle">0</div>
+    <!-- 统一数据面板 -->
+    <div class="dashboard">
+        <div class="data-row">
+            <div class="data-col">
+                <div class="col-label">当前年份</div>
+                <div class="num-box" id="year">2015</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">累计发射</div>
+                <div class="num-box" id="launch">0</div>
+            </div>
+            <div class="data-col">
+                <div class="col-label">水星粒子数</div>
+                <div class="num-box" id="particle">0</div>
+            </div>
         </div>
     </div>
-</div>
 
-<script src="./scripts/vendor/three.min.js"></script>
-<script src="./scripts/vendor/simplex-noise.min.js"></script>
-<script src="./scripts/components/topoRenderer.js"></script>
-<script src="./scripts/components/observatoryUi.js"></script>
-<script src="./scripts/core/telemetry.js"></script>
-<script src="./scripts/core/interaction.js"></script>
-<script src="./scripts/core/transition.js"></script>
-<script src="./scripts/core/iframeNavigation.js"></script>
-<script src="./scripts/core/audioManager.js"></script>
-<script src="./scripts/planets/config.js"></script>
-<script src="./scripts/components/planetUi.js"></script>
-<script src="./scripts/pages/planet.page.js"></script>
-<script src="./scripts/planets/mercury.js"></script>
+    <!-- 脚本加载顺序：完全对齐其他正常行星 -->
+    <script src="./scripts/vendor/three.min.js"></script>
+    <script src="./scripts/vendor/simplex-noise.min.js"></script>
+    <script src="./scripts/components/topoRenderer.js"></script>
+    <script src="./scripts/components/observatoryUi.js"></script>
+    <script src="./scripts/core/telemetry.js"></script>
+    <script src="./scripts/core/interaction.js"></script>
+    <script src="./scripts/core/transition.js"></script>
+    <!-- 暂时注释掉 iframeNavigation.js（避免冲突，其他行星如果也加载了再取消注释） -->
+    <!-- <script src="./scripts/core/iframeNavigation.js"></script> -->
+    <script src="./scripts/core/audioManager.js"></script>
+    <script src="./scripts/planets/config.js"></script>
+    <script src="./scripts/components/planetUi.js"></script>
+    <script src="./scripts/pages/planet.page.js"></script>
+    <!-- cursor.js 放在这里：和其他行星一致 -->
+    <script src="./scripts/core/cursor.js"></script>
+    <!-- mercury.js 放在最后：和其他行星一致 -->
+    <script src="./scripts/planets/mercury.js"></script>
 
-<!-- 水星数据脚本（累计商业发射+无超数BUG+粒子百万换算） -->
-<script>
-    // 核心配置：累计商业航天发射次数（官方数据）
-    const MAX_LAUNCH = 120;
-    const segments = [
-        { count: 0,    year: "2015" },
-        { count: 2,    year: "2018" },
-        { count: 7,    year: "2020" },
-        { count: 25,   year: "2022" },
-        { count: 50,   year: "2023" },
-        { count: 83,   year: "2024" },
-        { count: 120,  year: "2025" }
-    ];
+    <!-- 水星数据脚本（累计商业发射+无超数BUG+粒子百万换算+🔥完全干净，无任何光标代码） -->
+    <script>
+        // 核心配置：累计商业航天发射次数（官方数据）
+        const MAX_LAUNCH = 120;
+        const segments = [
+            { count: 0,    year: "2015" },
+            { count: 2,    year: "2018" },
+            { count: 7,    year: "2020" },
+            { count: 25,   year: "2022" },
+            { count: 50,   year: "2023" },
+            { count: 83,   year: "2024" },
+            { count: 120,  year: "2025" }
+        ];
 
-    // 粒子换算：累计数 × 10000 = 120万粒子
-    const PARTICLE_RATIO = 10000;
-    const SPEED = 100;
-    const STEP = 1;
-    let currentCount = 0;
-    let timer;
+        // 粒子换算：累计数 × 10000 = 120万粒子
+        const PARTICLE_RATIO = 10000;
+        const SPEED = 100;
+        const STEP = 1;
+        let currentCount = 0;
+        let timer;
 
-    function getCurrentYear(count) {
-        for (let i = segments.length - 1; i >= 0; i--) {
-            if (count >= segments[i].count) {
-                return segments[i].year;
+        function getCurrentYear(count) {
+            for (let i = segments.length - 1; i >= 0; i--) {
+                if (count >= segments[i].count) {
+                    return segments[i].year;
+                }
             }
-        }
-        return "2015";
-    }
-
-    function update() {
-        if (currentCount >= MAX_LAUNCH) {
-            clearInterval(timer);
-            return;
+            return "2015";
         }
 
-        let nextCount = currentCount + STEP;
-        if (nextCount > MAX_LAUNCH) nextCount = MAX_LAUNCH;
-        currentCount = nextCount;
+        function update() {
+            if (currentCount >= MAX_LAUNCH) {
+                clearInterval(timer);
+                return;
+            }
 
-        const currentYear = getCurrentYear(currentCount);
-        const particleNum = currentCount * PARTICLE_RATIO;
-        const particleText = particleNum.toLocaleString();
+            let nextCount = currentCount + STEP;
+            if (nextCount > MAX_LAUNCH) nextCount = MAX_LAUNCH;
+            currentCount = nextCount;
 
-        document.getElementById("year").innerText = currentYear;
-        document.getElementById("launch").innerText = currentCount;
-        document.getElementById("particle").innerText = particleText;
-    }
+            const currentYear = getCurrentYear(currentCount);
+            const particleNum = currentCount * PARTICLE_RATIO;
+            const particleText = particleNum.toLocaleString();
 
-    //  同步延迟3秒启动
-    window.addEventListener('load', () => {
-        setTimeout(() => {
-            timer = setInterval(update, SPEED);
-        }, 3000);
-    });
-</script>
+            document.getElementById("year").innerText = currentYear;
+            document.getElementById("launch").innerText = currentCount;
+            document.getElementById("particle").innerText = particleText;
+        }
+
+        //  同步延迟3秒启动（完全干净，和其他行星一致）
+        window.addEventListener('load', () => {
+            setTimeout(() => {
+                timer = setInterval(update, SPEED);
+            }, 3000);
+        });
+    </script>
 </body>
 
 </html>

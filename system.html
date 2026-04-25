@@ -6,7 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>NASA-Punk 天文台 : 系别选择</title>
     <link rel="stylesheet" href="./styles/main.css">
-    <link rel="stylesheet" href="./styles/transition.css">
+<link rel="stylesheet" href="./styles/transition.css">
+<!-- <link rel="stylesheet" href="./styles/cursor.css"> -->
 </head>
 
 <body>
@@ -27,9 +28,18 @@
 <script src="./scripts/core/transition.js"></script>
 <script src="./scripts/core/iframeNavigation.js"></script>
 <script src="./scripts/core/audioManager.js"></script>
+<script src="./scripts/core/cursor.js"></script>
 <script src="./scripts/components/systemSelect.config.js"></script>
 <script src="./scripts/components/systemSelectUi.js"></script>
 <script src="./scripts/pages/index.page.js"></script>
+<script>
+    // 初始化光标系统
+    document.addEventListener('DOMContentLoaded', function() {
+        if (typeof CursorSystem !== 'undefined') {
+            CursorSystem.init();
+        }
+    });
+</script>
 
 </body>
 

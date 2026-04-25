@@ -674,7 +674,7 @@ input[type=range].vertical::-webkit-slider-thumb {
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: opacity 0.3s;
+    transition: opacity 0.1s;
     flex-shrink: 0;
 }
 

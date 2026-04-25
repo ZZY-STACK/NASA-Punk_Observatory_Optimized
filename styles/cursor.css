@@ -1,0 +1,143 @@
+/**
+ * 夜航星号光标系统 - 纯引擎点专业版
+ * 特点:
+ * 1. 移除了飞船，只保留引擎点
+ * 2. 引擎点改为亮银色
+ * 3. 优化了呼吸动画效果
+ * 4. 系统重命名为"夜航星号"
+ */
+
+/* 基础光标样式 - 只保留引擎点 */
+.night-navigator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 16px;
+    height: 16px;
+    pointer-events: none;
+    z-index: 2147483647;
+    transform-origin: center;
+    will-change: transform, filter, opacity;
+    image-rendering: -webkit-optimize-contrast;
+    backface-visibility: hidden;
+    transform: translate3d(0, 0, 0);
+    /* 添加位置过渡动画 */
+    transition: left 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94), 
+                top 0.1s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    /* 确保背景透明 */
+    background-color: transparent !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+
+/* 引擎光效 - 亮银色 */
+.night-navigator .engine-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(var(--engine-size, 0.8));
+    width: 12px;
+    height: 12px;
+    background: radial-gradient(circle, 
+                rgba(220, 220, 220, 0.9), 
+                rgba(180, 180, 180, 0.8) 60%, 
+                transparent 90%);
+    border-radius: 50%;
+    opacity: var(--engine-intensity, 0.7);
+    filter: blur(0.8px);
+    pointer-events: none;
+    z-index: 1;
+    /* 紧密连接动画 */
+    transition: all 0.1s cubic-bezier(0.3, 0, 0.2, 1);
+    outline: none !important;
+}
+
+/* 夜航星号核心动画 */
+@keyframes engine-pulse {
+    0% {
+        --engine-size: 0.7;
+        --engine-intensity: 0.5;
+        filter: blur(0.8px) brightness(0.9) saturate(1.0);
+    }
+    45% {
+        --engine-size: 1.0;
+        --engine-intensity: 0.9;
+        filter: blur(1.0px) brightness(1.1) saturate(1.1);
+    }
+    85% {
+        --engine-size: 0.8;
+        --engine-intensity: 0.6;
+        filter: blur(0.9px) brightness(1.0) saturate(1.05);
+    }
+    100% {
+        --engine-size: 0.7;
+        --engine-intensity: 0.5;
+        filter: blur(0.8px) brightness(0.9) saturate(1.0);
+    }
+}
+
+/* 移动状态下的增强效果 */
+@keyframes engine-thrust {
+    0%, 100% {
+        --engine-size: 0.7;
+        --engine-intensity: 0.5;
+        filter: blur(0.8px) brightness(0.9) saturate(1.0);
+    }
+    40% {
+        --engine-size: 1.1;
+        --engine-intensity: 1.0;
+        filter: blur(1.1px) brightness(1.2) saturate(1.15);
+    }
+    70% {
+        --engine-size: 0.9;
+        --engine-intensity: 0.7;
+        filter: blur(1.0px) brightness(1.1) saturate(1.1);
+    }
+}
+
+/* 夜航星号核心动画 */
+.night-navigator {
+    animation: engine-pulse 4.5s cubic-bezier(0.2, 0, 0.1, 1) infinite;
+}
+
+/* 移动状态增强效果 */
+.night-navigator.cursor-moving {
+    animation: engine-thrust 0.7s cubic-bezier(0.3, 0, 0.2, 1) infinite;
+}
+
+/* 新增：夜航星号呼吸效果 */
+.night-navigator {
+    --engine-size: calc(0.7 + var(--breath-scale, 0) * 0.3);
+    --engine-intensity: calc(0.5 + var(--breath-intensity, 0) * 0.4);
+    filter: blur(calc(0.8px + var(--breath-blur, 0) * 0.2px)) 
+            brightness(calc(0.9 + var(--breath-brightness, 0) * 0.2)) 
+            saturate(calc(1.0 + var(--breath-saturation, 0) * 0.1));
+    opacity: calc(0.8 + var(--breath-opacity, 0) * 0.2);
+}
+
+/* 拖尾画布样式 */
+.cursor-trail-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 2147483646;
+    will-change: transform;
+    image-rendering: pixelated;
+}
+
+/* 隐藏默认光标 */
+body, * {
+    cursor: none !important;
+}
+
+/* WCAG 3.0 减少动画 */
+@media (prefers-reduced-motion: reduce) {
+    .night-navigator {
+        animation: none !important;
+        filter: blur(0) !important;
+    }
+    .night-navigator .engine-glow {
+        display: none !important;
+    }
+}
