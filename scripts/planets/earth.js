@@ -58,7 +58,8 @@ earthTiltGroup.rotation.x = 23.44 * (Math.PI / 180);
 
 // ===================== 全局配置 =====================
 const MAX_HOURS = 70000;         // 最大在轨小时
-const MAX_LAND_PARTICLES = 1400000;// 陆地粒子升级：140万
+// 动态调整粒子数量（根据设备性能）
+const MAX_LAND_PARTICLES = navigator.hardwareConcurrency > 4 ? 1400000 : 700000;
 let currentLandParticleCount = 0; // 当前粒子数
 let currentHours = 0; // 全局时间，从0开始
 let earthLandGeo, earthLandPos, earthLandColors; // 地球粒子全局引用
@@ -330,7 +331,8 @@ function timeDrivenSync(timestamp) {
     
     // 平滑增加粒子数量，减小增量
     if (currentLandParticleCount < targetParticleCount) {
-        const increment = Math.ceil((targetParticleCount - currentLandParticleCount) / 5); // 减小增量
+        // 更平滑的增量计算
+const increment = Math.max(1000, Math.ceil((targetParticleCount - currentLandParticleCount) / 10));
         currentLandParticleCount = Math.min(currentLandParticleCount + increment, targetParticleCount);
     }
     
@@ -342,9 +344,7 @@ function timeDrivenSync(timestamp) {
     
     // 同步更新粒子渲染
     if (earthLandPos && earthLandColors && earthLandGeo) {
-        const endIndex = currentLandParticleCount * 3;
-        earthLandGeo.setAttribute('position', new THREE.Float32BufferAttribute(earthLandPos.slice(0, endIndex), 3));
-        earthLandGeo.setAttribute('color', new THREE.Float32BufferAttribute(earthLandColors.slice(0, endIndex), 3));
+        earthLandGeo.setDrawRange(0, currentLandParticleCount);
     }
     
     // 同步更新数据面板
@@ -360,9 +360,7 @@ function timeDrivenSync(timestamp) {
         
         // 更新粒子渲染
         if (earthLandPos && earthLandColors && earthLandGeo) {
-            const endIndex = currentLandParticleCount * 3;
-            earthLandGeo.setAttribute('position', new THREE.Float32BufferAttribute(earthLandPos.slice(0, endIndex), 3));
-            earthLandGeo.setAttribute('color', new THREE.Float32BufferAttribute(earthLandColors.slice(0, endIndex), 3));
+            earthLandGeo.setDrawRange(0, currentLandParticleCount);
         }
         
         // 强制更新数据面板到最终值
@@ -475,6 +473,9 @@ function createEarthAsync()
                 });
                 const points = new THREE.Points(geo, mat);
                 earthSystemGroup.add(points);
+                geo.setAttribute('position', new THREE.BufferAttribute(landPos, 3));
+                geo.setAttribute('color', new THREE.BufferAttribute(landColors, 3));
+                geo.setDrawRange(0, 0);
 
                 const boundaryGeo = new THREE.BufferGeometry();
                 const boundaryMat = new THREE.PointsMaterial({
@@ -502,8 +503,8 @@ function createEarthAsync()
                 {
                     // 海洋粒子升级：30万→60万
                     const oceanParticles = 600000;
-                    const oceanPos       = [];
-                    const oceanColors    = [];
+                    const oceanPos       = new Float32Array(oceanParticles * 3);
+                    const oceanColors    = new Float32Array(oceanParticles * 3);
                     const oceanNoise     = new SimplexNoise('ocean-shell-v1');
                     const colOceanBase   = new THREE.Color('#1f4f7a');
                     const colOceanLight  = new THREE.Color('#6fb8ed');
@@ -523,8 +524,12 @@ function createEarthAsync()
 
                         let c = new THREE.Color();
                         c.copy(colOceanBase).lerp(colOceanLight, Math.min(1, Math.max(0, n * 1.1)));
-                        oceanPos.push(x, y, z);
-                        oceanColors.push(c.r, c.g, c.b);
+                        oceanPos[i * 3] = x;
+                        oceanPos[i * 3 + 1] = y;
+                        oceanPos[i * 3 + 2] = z;
+                        oceanColors[i * 3] = c.r;
+                        oceanColors[i * 3 + 1] = c.g;
+                        oceanColors[i * 3 + 2] = c.b;
                     }
 
                     const oceanGeo = new THREE.BufferGeometry();
@@ -536,6 +541,9 @@ function createEarthAsync()
                     });
                     const oceanPoints = new THREE.Points(oceanGeo, oceanMat);
                     oceanGroup.add(oceanPoints);
+                    oceanGeo.setAttribute('position', new THREE.BufferAttribute(oceanPos, 3));
+                    oceanGeo.setAttribute('color', new THREE.BufferAttribute(oceanColors, 3));
+                    oceanGeo.setDrawRange(0, 0);
 
                     let oceanIndex = 0;
                     let oceanFrame = 0;
@@ -547,16 +555,12 @@ function createEarthAsync()
                     {
                         oceanFrame++;
                         const oceanBatch = Math.min(oceanBatchMax, oceanBatchStart + oceanFrame * oceanBatchSlope);
-                        const endIndex = Math.min(oceanIndex + oceanBatch, oceanPos.length / 3);
-                        const posArray = oceanPos.slice(0, endIndex * 3);
-                        const colArray = oceanColors.slice(0, endIndex * 3);
-
-                        oceanGeo.setAttribute('position', new THREE.Float32BufferAttribute(posArray, 3));
-                        oceanGeo.setAttribute('color', new THREE.Float32BufferAttribute(colArray, 3));
+                        const endIndex = Math.min(oceanIndex + oceanBatch, oceanParticles);
+                        oceanGeo.setDrawRange(0, endIndex);
 
                         oceanIndex = endIndex;
 
-                        if (oceanIndex < oceanPos.length / 3)
+                        if (oceanIndex < oceanParticles)
                         {
                             requestAnimationFrame(addOceanParticles);
                         }
@@ -565,7 +569,7 @@ function createEarthAsync()
                     addOceanParticles();
                 }
 
-                createOceanLayer();
+                setTimeout(createOceanLayer, 0);
 
                 // 地球网格 (彻底隐藏)
                 const wireGeo = new THREE.WireframeGeometry(new THREE.SphereGeometry(5.0, 24, 24));
@@ -584,8 +588,7 @@ function createEarthAsync()
 
                 // 初始化粒子：从0开始
                 currentLandParticleCount = 0;
-                earthLandGeo.setAttribute('position', new THREE.Float32BufferAttribute([], 3));
-                earthLandGeo.setAttribute('color', new THREE.Float32BufferAttribute([], 3));
+                earthLandGeo.setDrawRange(0, 0);
                 
                 console.log('Earth generation completed');
                 resolve(); // 完成promise
@@ -610,11 +613,14 @@ async function initializeScene() {
     console.log('Earth created');
     
     // 创建其他元素
-    createClouds();
-    createLEOSatellites();
-    createMoon();
-    
-    console.log('All elements created, starting animation...');
+    requestAnimationFrame(() => {
+        createClouds();
+    });
+    setTimeout(() => {
+        createLEOSatellites();
+        createMoon();
+        console.log('All elements created, starting animation...');
+    }, 120);
     
     // 启动动画
     requestAnimationFrame(timeDrivenSync);
@@ -631,8 +637,9 @@ function createClouds()
 {
     // 云层粒子升级：60万→90万
     const cloudParticles = 900000;
-    const cloudPos       = [];
+    const cloudPos       = new Float32Array(cloudParticles * 3);
     const cloudGen       = new SimplexNoise('cloud-layer-v3');
+    let validCount       = 0;
 
     for (let i = 0; i < cloudParticles; i++)
     {
@@ -648,7 +655,10 @@ function createClouds()
 
         if (n > 0.3)
         {
-            cloudPos.push(x, y, z);
+            cloudPos[validCount * 3] = x;
+            cloudPos[validCount * 3 + 1] = y;
+            cloudPos[validCount * 3 + 2] = z;
+            validCount++;
         }
     }
 
@@ -658,6 +668,8 @@ function createClouds()
     });
     const points = new THREE.Points(geo, mat);
     cloudGroup.add(points);
+    geo.setAttribute('position', new THREE.BufferAttribute(cloudPos, 3));
+    geo.setDrawRange(0, 0);
 
     let currentIndex = 0;
     let cloudFrame = 0;
@@ -669,14 +681,12 @@ function createClouds()
     {
         cloudFrame++;
         const batchSize = Math.min(cloudBatchMax, cloudBatchStart + cloudFrame * cloudBatchSlope);
-        const endIndex = Math.min(currentIndex + batchSize, cloudPos.length / 3);
-        const posArray = cloudPos.slice(0, endIndex * 3);
-
-        geo.setAttribute('position', new THREE.Float32BufferAttribute(posArray, 3));
+        const endIndex = Math.min(currentIndex + batchSize, validCount);
+        geo.setDrawRange(0, endIndex);
 
         currentIndex = endIndex;
 
-        if (currentIndex < cloudPos.length / 3)
+        if (currentIndex < validCount)
         {
             requestAnimationFrame(addCloudParticles);
         }
