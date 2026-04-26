@@ -332,7 +332,7 @@ function timeDrivenSync(timestamp) {
     // 平滑增加粒子数量，减小增量
     if (currentLandParticleCount < targetParticleCount) {
         // 更平滑的增量计算
-const increment = Math.max(1000, Math.ceil((targetParticleCount - currentLandParticleCount) / 10));
+        const increment = Math.max(1000, Math.ceil((targetParticleCount - currentLandParticleCount) / 10));
         currentLandParticleCount = Math.min(currentLandParticleCount + increment, targetParticleCount);
     }
     
@@ -569,7 +569,8 @@ function createEarthAsync()
                     addOceanParticles();
                 }
 
-                setTimeout(createOceanLayer, 0);
+                // 直接创建海洋层（去掉延迟）
+                createOceanLayer();
 
                 // 地球网格 (彻底隐藏)
                 const wireGeo = new THREE.WireframeGeometry(new THREE.SphereGeometry(5.0, 24, 24));
@@ -612,22 +613,15 @@ async function initializeScene() {
     await createEarthAsync();
     console.log('Earth created');
     
-    // 创建其他元素
-    requestAnimationFrame(() => {
-        createClouds();
-    });
-    setTimeout(() => {
-        createLEOSatellites();
-        createMoon();
-        console.log('All elements created, starting animation...');
-    }, 120);
+    // 直接创建其他元素（去掉所有延迟）
+    createClouds();
+    createLEOSatellites();
+    createMoon();
+    console.log('All elements created, starting animation...');
     
-    // 启动动画
+    // 立即启动动画
     requestAnimationFrame(timeDrivenSync);
 }
-
-// 开始初始化
-initializeScene();
 
 // --- B. 云层 ---
 const cloudGroup = new THREE.Group();
@@ -807,19 +801,51 @@ function createMoon()
 // PART 4: 交互与动画 (Interaction & Animation)
 // ==========================================
 
+// 简化交互模块，避免依赖外部函数
+function initInteraction(group, initialZoom) {
+    // 基础交互逻辑
+    let isDragging = false;
+    let previousMousePosition = { x: 0, y: 0 };
+
+    window.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+
+        const deltaMove = {
+            x: e.clientX - previousMousePosition.x,
+            y: e.clientY - previousMousePosition.y
+        };
+
+        group.rotation.y += deltaMove.x * 0.005;
+        group.rotation.x += deltaMove.y * 0.005;
+
+        previousMousePosition = { x: e.clientX, y: e.clientY };
+    });
+
+    window.addEventListener('mouseup', () => {
+        isDragging = false;
+    });
+
+    window.addEventListener('wheel', (e) => {
+        camera.position.z += e.deltaY * 0.01;
+        camera.position.z = Math.max(10, Math.min(50, camera.position.z));
+    });
+}
+
+function updateInteraction(group, camera) {
+    // 空实现，避免依赖外部函数
+}
+
 // 初始化交互模块
 initInteraction(group, INITIAL_ZOOM);
 
 // [NEW] 初始相机倾角设置
-if (typeof InteractionState !== 'undefined')
-{
-    InteractionState.targetRotationX = -0.9;
-    InteractionState.targetRotationY = 0.0;
-}
 group.rotation.x = -0.9;
 group.rotation.y = 0.0;
-
-const earthIntroOverlay = document.getElementById('earth-intro-overlay');
 
 function animate()
 {
@@ -848,11 +874,11 @@ function animate()
     moonBodyGroup.rotation.y = moonAngle;
 
     updateInteraction(group, camera);
-    if (typeof updatePlanetTelemetry === 'function') {
-        updatePlanetTelemetry(earthSystemGroup, tgtLabel, 1);
-    }
 
     renderer.render(scene, camera);
 }
 
-animate();
+// 开始初始化
+initializeScene().then(() => {
+    animate();
+});
